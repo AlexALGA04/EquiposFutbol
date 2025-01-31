@@ -86,21 +86,24 @@ namespace EquiposFutbol
         static void CrearEquipo()
         {
 
-            using (StreamWriter writer = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.txt")))
+            using (StreamWriter writer = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.json")))
             {
                 foreach (var item in LigaGlobal)
                 {
-                    writer.Write(item.Key);
-                    writer.Write(item.Value.Item1);
-                    foreach (var c in item.Value.Item2)
-                    {
-                        writer.Write(c);
 
+                    writer.Write($"{{{item.Key}, {item.Value.Item1}, [");
+
+                    for(int i = 0; i < item.Value.Item2.Length; i++) 
+                    {
+                        writer.Write(item.Value.Item2[i] + ((i == item.Value.Item2.Length - 1)? "" : ", ") );
                     }
+                    writer.Write("]}");
                     writer.WriteLine();
                 }
             }
-            Console.WriteLine("El archivo ha sido escrito en: " + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.txt"));
+            //Console.WriteLine("El archivo ha sido escrito en: " + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.json"));
         }
+
+        
     }
 }
