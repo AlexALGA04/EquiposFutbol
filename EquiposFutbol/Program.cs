@@ -26,17 +26,28 @@ namespace EquiposFutbol
             int opcion;
             while (true)
             {
-                case 1:
-                    CargarEquipo();
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    break;
-                default:
-                    break;
+                opcion = PedirNumero("----MENÚ----\nCargar equipo (1)\nCrear equipo (2)\nModificar equipo (3)\nSalir (0)\nElige una opción: ");
+                
+                switch (opcion)
+                {
+                    case 1:
+                        CargarEquipo();
+                        break;
+                    case 2:
+                        CrearEquipo();
+                        break;
+                    case 3:
+                        break;
+                    case 0:
+                        return;
+                    default:
+                        break;
+                }
             }
-            Console.ReadKey();
+        }
+        static void CargarInfo()
+        {
+
         }
         static void CargarEquipo()
         {
