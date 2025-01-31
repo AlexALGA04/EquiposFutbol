@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +29,7 @@ namespace EquiposFutbol
                     CargarEquipo();
                     break;
                 case 2:
+                    CrearEquipo();
                     break;
                 case 3:
                     break;
@@ -60,6 +63,26 @@ namespace EquiposFutbol
                 }
             } while (!canInt);
             return numero;
+        }
+
+        static void CrearEquipo()
+        {
+
+            using (StreamWriter writer = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.txt")))
+            {
+                foreach (var item in LigaGlobal)
+                {
+                    writer.Write(item.Key);
+                    writer.Write(item.Value.Item1);
+                    foreach (var c in item.Value.Item2)
+                    {
+                        writer.Write(c);
+
+                    }
+                    writer.WriteLine();
+                }
+            }
+            Console.WriteLine("El archivo ha sido escrito en: " + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Test.txt"));
         }
     }
 }
