@@ -18,18 +18,18 @@ namespace EquiposFutbol
 
         static void Main(string[] args)
         {
+            CargarInfo();
             IniciarMenu();
         }
         static void IniciarMenu()
         {
-            int opcion = PedirNumero("---MENÚ---\nCargar equipo (1)\nCrear equipo (2)\nModificar equipo (3)\nElige una opción: ");
-            switch(opcion)
+            int opcion;
+            while (true)
             {
                 case 1:
                     CargarEquipo();
                     break;
                 case 2:
-                    CrearEquipo();
                     break;
                 case 3:
                     break;
@@ -40,10 +40,17 @@ namespace EquiposFutbol
         }
         static void CargarEquipo()
         {
-            foreach(var c in LigaGlobal)
+            Console.WriteLine("----------");
+            foreach (var c in LigaGlobal)
             {
-                Console.WriteLine($"Equipo: ");
-                Console.WriteLine(c.Value.Item1);
+                Console.WriteLine($"Equipo: {c.Key}");
+                Console.WriteLine($"Puntuación: {c.Value.Item1}");
+                Console.Write("Jugadores: ");
+                foreach (string jugador in c.Value.Item2)
+                {
+                    Console.Write($"{jugador}   ");
+                }
+                Console.WriteLine("\n----------");
             }
         }
         static int PedirNumero(string mensaje)
