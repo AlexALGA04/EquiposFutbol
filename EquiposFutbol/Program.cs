@@ -10,6 +10,7 @@ namespace EquiposFutbol
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("hola");
         }
     }
 }
