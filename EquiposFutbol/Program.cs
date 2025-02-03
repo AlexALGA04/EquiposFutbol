@@ -11,7 +11,8 @@ namespace EquiposFutbol
 {
     internal class Program
     {
-        public static Dictionary<string, (int, string[])> LigaGlobal = new Dictionary<string, (int, string[])>()
+        public static Dictionary<string, (int, List<string>)> LigaGlobal = new Dictionary<string, (int, List<string>)>();
+        public static char separador = ';';
 
         //Ejemplo estructura de diccionario, la llave es el nombre del equipo, el numero como primer valor son los puntos del equipo, y la array de strings como
         //segundo valor son los jugadores
@@ -19,7 +20,7 @@ namespace EquiposFutbol
             { "uno", (1, new string[] { "a", "b", "c" }) },
             { "dos", (2, new string[] { "d", "e", "f" }) },
             { "tres", (3, new string[] { "g", "h", "i" }) }
-        }*/;
+        }*/
 
         static void Main(string[] args)
         {
@@ -85,14 +86,14 @@ namespace EquiposFutbol
                 while ((texto = reader.ReadLine()) != null)
                 {
                     //Separa todos los datos por comas
-                    separadas = texto.Split(',');
+                    separadas = texto.Split(separador);
 
                     equipo = separadas[0];
                     puntuacion = int.Parse(separadas[1]);
                     jugadores = separadas.Skip(2).ToList();
 
                     // el primero es el nombre del equipo, el segundo es la puntuacion y a partir de ahi cada jugador
-                    LigaGlobal.Add(equipo, (puntuacion, jugadores.ToArray()));
+                    LigaGlobal.Add(equipo, (puntuacion, jugadores));
 
                     indice++;
                 }
@@ -114,7 +115,7 @@ namespace EquiposFutbol
                 Console.Write("Jugadores: ");
                 foreach (string jugador in c.Value.Item2)
                 {
-                    Console.Write($"{jugador}"+ ((indice == c.Value.Item2.Length - 1) ? "" : ", "));
+                    Console.Write($"{jugador}"+ ((indice == c.Value.Item2.Count - 1) ? "" : ", "));
                     indice++;
                 }
                 Console.WriteLine("\n----------");
@@ -124,44 +125,36 @@ namespace EquiposFutbol
         static void CrearEquipo()
         {
             int puntuacion;
-            int numeroDeJugadores;
-            int indice = 0;
             string equipo;
             string nombre;
-            string[] jugadores;
+            List<string> jugadores = new List<string>();
 
             Console.Clear();
             Console.WriteLine("========================");
             Console.WriteLine("===== Crear Equipo =====");
             Console.WriteLine("========================");
-            equipo = PedirTextoSinComas("Dime el nombre del equipo: ");
+            equipo = PedirTextoSinSeparador("Dime el nombre del equipo: ");
 
             //Si el equipo ya existe no se creara y pedira el nombre de nuevo
             while(LigaGlobal.ContainsKey(equipo)) {
                 Console.WriteLine("Este equipo ya existe, vuelve a probar");
-                equipo = PedirTextoSinComas("Dime el nombre del equipo: \n");
+                equipo = PedirTextoSinSeparador("Dime el nombre del equipo: \n");
             }
 
             puntuacion = PedirNumero("Dime la puntuacion global que tiene: \n> ");
 
-            numeroDeJugadores = PedirNumero("Dime cuantos jugadores tiene tu equipo: \n> ");
-
-            jugadores = new string[numeroDeJugadores];
-
-            Console.WriteLine("Escribelos uno por uno: ");
+            Console.WriteLine("Escribe jugadores, cuando desees finalizar no escribas nada y dale a enter: ");
 
             //Bucle que va pidiendo los jugadores y los guarda en una array
-            while(indice < numeroDeJugadores)
+            do
             {
-                nombre = PedirTextoSinComas("> ");
+                nombre = PedirTextoSinSeparador("> ");
                 if (!String.IsNullOrWhiteSpace(nombre))
                 {
-                    jugadores[indice] = nombre;
-                    indice++;
+                    jugadores.Add(nombre);
                 }
-                else
-                    Console.WriteLine("No sirven Casillas en blanco");
-            }
+            } 
+            while(!string.IsNullOrEmpty(nombre));
 
             //Se crea la nueva instanacia del equipo con sus valores y se añade al archivo de texto.
             LigaGlobal.Add(equipo, (puntuacion, jugadores));
@@ -309,7 +302,7 @@ namespace EquiposFutbol
 
                 //Elimina de la array de jugadores el jugador seleccionado por el usuario, se lo asigna al diccionario y al archivo de texto.
                 jugadores.Remove(jugador);
-                LigaGlobal[equipo] =  (puntuacion, jugadores.ToArray());
+                LigaGlobal[equipo] =  (puntuacion, jugadores);
                 SobreecribirArchivo();
             }
             else
@@ -319,18 +312,18 @@ namespace EquiposFutbol
         {
             List<string> jugadores = LigaGlobal[equipo].Item2.ToList();
             int puntuacion = LigaGlobal[equipo].Item1;
-            int numJugadores = PedirNumero("¿Cuantos jugadores nuevos quieres añadir?: ");
             string jugador;
 
             //Le va preguntando el nombre de tantos jugadores como haya indicado el usuario
-            for(int i = 0; i < numJugadores; i++)
+            do
             {
-                jugador = PedirTextoSinComas("Nombre de jugador: ");
+                jugador = PedirTextoSinSeparador("Nombre de jugador (para finalizar, pulsa enter sin escribir nada): ");
                 jugadores.Add(jugador);
-            }
+            } 
+            while (!string.IsNullOrEmpty(jugador));
 
             //Añade los nuevos jugadores en el diccionario 
-            LigaGlobal[equipo] = (puntuacion, jugadores.ToArray());
+            LigaGlobal[equipo] = (puntuacion, jugadores);
             SobreecribirArchivo();
         }
         static void SobreecribirArchivo()
@@ -358,11 +351,11 @@ namespace EquiposFutbol
                     puntuacion = item.Value.Item1;
                     jugadores = item.Value.Item2.ToList();
 
-                    writer.Write($"{equipo},{puntuacion},");
+                    writer.Write($"{equipo}{separador}{puntuacion}{separador}");
 
                     for (int i = 0; i < jugadores.Count; i++)
                     {
-                        writer.Write(jugadores[i] + ((i == item.Value.Item2.Length - 1) ? "" : ","));
+                        writer.Write(jugadores[i] + ((i == item.Value.Item2.Count - 1) ? "" : $"{separador}"));
                     }
                     writer.WriteLine();
                 }
@@ -388,14 +381,14 @@ namespace EquiposFutbol
             while (!canInt);
             return numero;
         }
-        static string PedirTextoSinComas(string mensaje)
+        static string PedirTextoSinSeparador(string mensaje)
         {
             //Función que pide una string y hace las comprobaciones para que no contenga comas, las comas en los nombres podrian romper el programa.
             Console.Write(mensaje);
             string texto = Console.ReadLine();
-            while (texto.Contains(','))
+            while (texto.Contains(separador))
             {
-                Console.WriteLine("No puede contener comas, ya que pueden romper el programa, vuelve a intentarlo");
+                Console.WriteLine($"No puede contener ' {separador} ', ya que pueden romper el programa, vuelve a intentarlo");
                 Console.Write(mensaje);
                 texto = Console.ReadLine();
             }
